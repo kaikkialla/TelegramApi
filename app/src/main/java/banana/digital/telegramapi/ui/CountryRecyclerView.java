@@ -78,7 +78,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Country = countryConstructor.CountryName;
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.relative_layout, new PhoneInputActivity()).commit();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputActivity()).commit();
             }
         });
 
