@@ -73,6 +73,9 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     }
 
 
+    public void sendPhoneNumber(String phoneNumber) {
+        mClient.send(new TdApi.SetAuthenticationPhoneNumber(phoneNumber, false, false), this);
+    }
 
 
     @Override
@@ -100,6 +103,7 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
                 break;
             case TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR:
                 mClient.send(new TdApi.SetDatabaseEncryptionKey(), this);
+                break;
         }
     }
 }

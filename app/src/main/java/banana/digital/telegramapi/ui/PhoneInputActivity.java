@@ -1,5 +1,9 @@
 package banana.digital.telegramapi.ui;
-
+/*
+С кодом страны:
+    Ставим левый паддинг(нижняя полоска останется на метсе, скролл доступен)
+    Поверх рисуем плюс
+*/
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -46,6 +50,8 @@ public class PhoneInputActivity extends Fragment {
     TextView Country;//Выбор страны
     TextInputEditText countryCodeEt;
     TextInputEditText phoneNumber;
+    ImageView backButton;
+    ImageView applyButton;
 
     String firstPhoneNumberPart;
     String secondPhoneNumberPart;
@@ -64,17 +70,22 @@ public class PhoneInputActivity extends Fragment {
         Country = view.findViewById(R.id.Country);
         countryCodeEt = view.findViewById(R.id.CountryCodeET);
         phoneNumber = view.findViewById(R.id.PhoneNumber);
+        applyButton = view.findViewById(R.id.applyButton);
+        backButton = view.findViewById(R.id.backButton);
 
 
         int maxLength = 10 + 2;
         phoneNumber.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
 
+
+
+
         phoneNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence editable, int i, int i1, int i2) {
                 if((editable.length() <= 3)) {
-                    
+
                     firstPhoneNumberPart = String.valueOf(editable);
                     Log.e("tig", firstPhoneNumberPart);
                 } else if ((editable.length() > 3)  && (editable.length() <= 7)) {
@@ -113,6 +124,15 @@ public class PhoneInputActivity extends Fragment {
 
         phoneNumber.setSelection(phoneNumber.getText().length());
         countryCodeEt.setSelection(countryCodeEt.getText().length());
+
+
+        //Если поля не пустые и формат данных верный, то обрабатываем
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TelegramManager.getInstance(getActivity()).sendPhoneNumber("+" + String.valueOf(countryCodeEt.getText()) + String.valueOf(phoneNumber.getText()));
+            }
+        });
     }
 
 
@@ -121,11 +141,9 @@ public class PhoneInputActivity extends Fragment {
         super.onResume();
         if(Adapter.Country != null) {
             Country.setText(Adapter.Country);
-            countryCodeEt.setText("+" + String.valueOf(Adapter.Code));
-            //Toast.makeText(context, Adapter.CountryCode, Toast.LENGTH_SHORT).show();
+            countryCodeEt.setText(String.valueOf(Adapter.Code));
         } else if(Adapter.Country == null){
             Country.setText("Выберите страну");
-            countryCodeEt.setText("aaa");
         }
 
 
@@ -134,33 +152,3 @@ public class PhoneInputActivity extends Fragment {
     }
 }
 
-@SuppressLint("AppCompatCustomView")
-class CustomEditText extends EditText {
-
-
-    public CustomEditText(Context context) {
-        super(context);
-    }
-
-
-
-    @Override
-    public void onSelectionChanged(int start, int end) {
-
-        CharSequence text = getText();
-        if (text != null) {
-            if (start != text.length() || end != text.length()) {
-                setSelection(text.length(), text.length());
-                return;
-            }
-        }
-
-        super.onSelectionChanged(start, end);
-    }
-
-
-
-}
-/*TODO
-Сделать штуку с отправкой смс
-*/

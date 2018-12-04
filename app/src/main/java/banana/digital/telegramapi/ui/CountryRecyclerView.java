@@ -73,7 +73,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
 
         holder.CountryName.setText(CountryName);
-        holder.CountryCode.setText("+" + CountryCode);
+        holder.CountryCode.setText(String.valueOf(CountryCode));
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
