@@ -48,6 +48,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     MainActivity activity;
     Context context;
     public static String Country;
+    public static int Code;
 
     public Adapter (MainActivity activity) {
         this.activity = activity;
@@ -67,8 +68,9 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         context = this.context;
         final CountryConstructor countryConstructor = CountryDatabase.Countries[position];
-        String CountryName = countryConstructor.CountryName;
         int CountryCode = countryConstructor.CountryCode;
+        String CountryName = countryConstructor.CountryName;
+
 
         holder.CountryName.setText(CountryName);
         holder.CountryCode.setText("+" + CountryCode);
@@ -78,6 +80,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Country = countryConstructor.CountryName;
+                Code = countryConstructor.CountryCode;
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputActivity()).commit();
             }
         });
