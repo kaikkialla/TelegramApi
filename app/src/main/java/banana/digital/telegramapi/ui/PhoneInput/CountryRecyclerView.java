@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import banana.digital.telegramapi.R;
@@ -37,6 +38,14 @@ public class CountryRecyclerView extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
 
+
+        ImageView backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+            }
+        });
     }
 
 }
@@ -58,10 +67,11 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(activity);
         View v = inflater.inflate(R.layout.country_recycler_view_row, parent, false );
         ViewHolder vh = new ViewHolder(v);
-
         return vh;
 
     }
+
+
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
@@ -70,9 +80,8 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         int CountryCode = countryConstructor.CountryCode;
         String CountryName = countryConstructor.CountryName;
 
-
         holder.CountryName.setText(CountryName);
-        holder.CountryCode.setText(String.valueOf(CountryCode));
+        holder.CountryCode.setText("+" + CountryCode);
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

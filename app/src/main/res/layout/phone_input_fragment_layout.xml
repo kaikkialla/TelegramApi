@@ -28,7 +28,7 @@
                 android:id="@+id/applyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:src="@drawable/ic_check_black_24dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="4dp"/>

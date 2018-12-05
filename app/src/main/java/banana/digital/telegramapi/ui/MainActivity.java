@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
 
         if(savedInstanceState == null) {
             //getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
         }
     }
 

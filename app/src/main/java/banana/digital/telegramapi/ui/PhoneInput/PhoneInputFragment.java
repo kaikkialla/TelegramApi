@@ -23,12 +23,13 @@ import android.widget.TextView;
 
 import banana.digital.telegramapi.R;
 import banana.digital.telegramapi.data.TelegramManager;
+import banana.digital.telegramapi.ui.CodeInput.CodeInputFragment;
 
 
 public class PhoneInputFragment extends Fragment {
 
     Context context;
-    TextView Country;//Выбор страны
+    TextView CountryTv;//Выбор страны
     TextInputEditText countryCodeEt;
     TextInputEditText phoneNumberEt;
     ImageView backButton;
@@ -36,8 +37,8 @@ public class PhoneInputFragment extends Fragment {
 
     String firstPhoneNumberPart;
     String secondPhoneNumberPart;
-    public static long PhoneNumber;
     public static int CountryCode;
+    public static long PhoneNumber;
 
     @Nullable
     @Override
@@ -50,7 +51,7 @@ public class PhoneInputFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         context = getContext();
-        Country = view.findViewById(R.id.Country);
+        CountryTv = view.findViewById(R.id.Country);
         countryCodeEt = view.findViewById(R.id.CountryCodeET);
         phoneNumberEt = view.findViewById(R.id.PhoneNumber);
         applyButton = view.findViewById(R.id.applyButton);
@@ -61,9 +62,31 @@ public class PhoneInputFragment extends Fragment {
         phoneNumberEt.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
 
+        countryCodeEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence editable, int i, int i1, int i2) {
+                for(int a = 0; a < 13; a++) {
+                    if(String.valueOf(editable).replace(" ", "").equals(String.valueOf(CountryDatabase.Countries[a].CountryCode).replace(" ", ""))) {
+                        CountryTv.setText(CountryDatabase.Countries[a].CountryName);
+                    }
+
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
 
 
+/*Пытаюсь форматировать номер телефона
         phoneNumberEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence editable, int i, int i1, int i2) {
@@ -88,16 +111,15 @@ public class PhoneInputFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
 
-                /*
-                Spannable text = new SpannableString(editable);
-                text.setSpan(new ForegroundColorSpan(Color.GREEN), 0, editable.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                */
+
+                //Spannable text = new SpannableString(editable);
+                //text.setSpan(new ForegroundColorSpan(Color.GREEN), 0, editable.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+
             }
         });
-
-
-        Country.setOnClickListener(new View.OnClickListener() {
+*/
+        CountryTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CountryRecyclerView()).commit();
@@ -114,8 +136,11 @@ public class PhoneInputFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 CountryCode = Integer.parseInt(String.valueOf(countryCodeEt.getText()));
-                PhoneNumber = Integer.parseInt(String.valueOf(phoneNumberEt.getText()));
+                PhoneNumber = Long.parseLong(String.valueOf(phoneNumberEt.getText()));
+                //Проверяем код и номер телефона на правильность
                 TelegramManager.getInstance(getActivity()).sendPhoneNumber("+" + String.valueOf(countryCodeEt.getText()) + String.valueOf(phoneNumberEt.getText()));
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
+
             }
         });
     }
@@ -125,10 +150,10 @@ public class PhoneInputFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if(Adapter.Country != null) {
-            Country.setText(Adapter.Country);
+            CountryTv.setText(Adapter.Country);
             countryCodeEt.setText(String.valueOf(Adapter.Code));
         } else if(Adapter.Country == null){
-            Country.setText("Выберите страну");
+            CountryTv.setText("Выберите страну");
         }
 
 
