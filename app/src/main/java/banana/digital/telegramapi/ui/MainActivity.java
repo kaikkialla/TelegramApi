@@ -1,6 +1,5 @@
 package banana.digital.telegramapi.ui;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -9,6 +8,8 @@ import org.drinkless.td.libcore.telegram.TdApi;
 
 import banana.digital.telegramapi.R;
 import banana.digital.telegramapi.data.TelegramManager;
+import banana.digital.telegramapi.ui.CodeInput.CodeInputFragment;
+import banana.digital.telegramapi.ui.PhoneInput.PhoneInputFragment;
 
 public class MainActivity extends AppCompatActivity implements Client.ResultHandler{
 
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
         TelegramManager.getInstance(this).initialize(this);
 
         if(savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputActivity()).commit();
+            //getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
         }
     }
 
