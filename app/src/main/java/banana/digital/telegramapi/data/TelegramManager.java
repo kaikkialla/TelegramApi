@@ -31,7 +31,7 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     }
 
 
-    public static TelegramManager getInstance(@NonNull Context context) {
+    public static TelegramManager getInstance() {
         if (instance == null) {
             instance = new TelegramManager();
         }
@@ -43,6 +43,7 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
 
     @Override
     public void onResult(TdApi.Object object) {
+        Log.v(TAG, "onResult: object.getClass()=" + object.getClass().getSimpleName());
         switch (object.getConstructor()) {
             case TdApi.UpdateAuthorizationState.CONSTRUCTOR: ;
                 onUpdateAuthorizationState(((TdApi.UpdateAuthorizationState) object).authorizationState);
@@ -73,9 +74,6 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     }
 
 
-    public void sendPhoneNumber(String phoneNumber) {
-        mClient.send(new TdApi.SetAuthenticationPhoneNumber(phoneNumber, false, false), this);
-    }
 
 
     @Override
@@ -106,6 +104,23 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
                 break;
         }
     }
+
+
+    public void sendPhoneNumber(String phoneNumber) {
+        mClient.send(new TdApi.SetAuthenticationPhoneNumber(phoneNumber, false, false), this);
+    }
+
+    public void sendCode(String code) {
+        mClient.send(new TdApi.CheckAuthenticationCode(code, null, null), this);
+    }
+
+
+    public void getChats() {
+        mClient.send(new TdApi.GetChats(Long.MAX_VALUE, 0, 42), this);
+
+    }
+
+
 }
 
 

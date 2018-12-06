@@ -17,12 +17,13 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TelegramManager.getInstance(this).initialize(this);
+        TelegramManager.getInstance().initialize(this);
 
-        if(savedInstanceState == null) {
-            //getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+       /* if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
-        }
+        }*/
+
+
     }
 
     @Override
@@ -41,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
     @Override
     public void onResult(TdApi.Object object) {
         if(object.getConstructor() == TdApi.UpdateAuthorizationState.CONSTRUCTOR) {
-            final TdApi.AuthorizationState authorizationState = (TdApi.AuthorizationState) object;
+            final TdApi.AuthorizationState authorizationState = ((TdApi.UpdateAuthorizationState) object).authorizationState;
             if(authorizationState.getConstructor() == TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR) {
-                //Показываем экран с вводом телефона
-                //getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputActivity()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+            } else if(authorizationState.getConstructor() == TdApi.AuthorizationStateWaitCode.CONSTRUCTOR) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
             }
         }
     }

@@ -127,8 +127,9 @@ public class PhoneInputFragment extends Fragment {
         });
 
 
-        phoneNumberEt.setSelection(phoneNumberEt.getText().length());
-        countryCodeEt.setSelection(countryCodeEt.getText().length());
+
+        //phoneNumberEt.setSelection(phoneNumberEt.getText().length());
+        //countryCodeEt.setSelection(countryCodeEt.getText().length());
 
 
         //Если поля не пустые и формат данных верный, то обрабатываем
@@ -138,8 +139,9 @@ public class PhoneInputFragment extends Fragment {
                 CountryCode = Integer.parseInt(String.valueOf(countryCodeEt.getText()));
                 PhoneNumber = Long.parseLong(String.valueOf(phoneNumberEt.getText()));
                 //Проверяем код и номер телефона на правильность
-                TelegramManager.getInstance(getActivity()).sendPhoneNumber("+" + String.valueOf(countryCodeEt.getText()) + String.valueOf(phoneNumberEt.getText()));
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
+                TelegramManager.getInstance().sendPhoneNumber("+" + String.valueOf(countryCodeEt.getText()) + String.valueOf(phoneNumberEt.getText()));
+
+                //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CodeInputFragment()).commit();
 
             }
         });
