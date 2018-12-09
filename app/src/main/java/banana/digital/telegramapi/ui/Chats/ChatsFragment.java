@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -18,11 +17,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import banana.digital.telegramapi.R;
+import banana.digital.telegramapi.data.ChatCache;
 import banana.digital.telegramapi.data.TelegramManager;
 import banana.digital.telegramapi.ui.MainActivity;
-import banana.digital.telegramapi.ui.PhoneInput.CountryDatabase;
 import banana.digital.telegramapi.ui.PhoneInput.PhoneInputFragment;
-
 
 
 public class ChatsFragment extends Fragment {
@@ -107,7 +105,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final Adapter.ViewHolder holder, final int position) {
         context = this.context;
-
+        holder.name.setText("number +" + PhoneInputFragment.CountryCode + " " + PhoneInputFragment.PhoneNumber);
 
 
 
@@ -116,7 +114,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return -1;
+        return 5;
 
     }
 
@@ -126,14 +124,14 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
         View v;
         Context context;
-
+        TextView name;
 
 
         public ViewHolder(View v) {
             super(v);
             this.context = context;
             this.v = v;
-
+            name = v.findViewById(R.id.Name);
 
         }
     }

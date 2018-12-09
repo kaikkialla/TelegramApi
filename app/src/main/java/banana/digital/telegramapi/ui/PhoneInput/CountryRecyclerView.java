@@ -43,7 +43,7 @@ public class CountryRecyclerView extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.layout, new PhoneInputFragment()).commit();
             }
         });
     }
@@ -89,7 +89,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             public void onClick(View view) {
                 Country = countryConstructor.CountryName;
                 Code = countryConstructor.CountryCode;
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new PhoneInputFragment()).commit();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.layout, new PhoneInputFragment()).commit();
             }
         });
 

@@ -122,7 +122,7 @@ public class PhoneInputFragment extends Fragment {
         CountryTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.FrameLayout, new CountryRecyclerView()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.layout, new CountryRecyclerView()).commit();
             }
         });
 

@@ -45,7 +45,7 @@ public class CodeInputFragment extends Fragment {
         applyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TelegramManager.getInstance(getActivity()).sendCode(String.valueOf(VerificationCodeEt.getText()));
+                TelegramManager.getInstance().sendCode(String.valueOf(VerificationCodeEt.getText()));
             }
         });
 
