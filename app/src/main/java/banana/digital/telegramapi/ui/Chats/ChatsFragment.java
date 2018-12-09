@@ -12,9 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.drinkless.td.libcore.telegram.Client;
+import org.drinkless.td.libcore.telegram.TdApi;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import banana.digital.telegramapi.R;
 import banana.digital.telegramapi.data.ChatCache;
@@ -27,6 +32,7 @@ public class ChatsFragment extends Fragment {
 
     RecyclerView recyclerView;
     Context context;
+    Adapter adapter;
 
 
     @Nullable
@@ -41,7 +47,7 @@ public class ChatsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
-        Adapter adapter = new Adapter((MainActivity) getActivity());
+        adapter = new Adapter((MainActivity) getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
 
@@ -70,6 +76,8 @@ public class ChatsFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ChatCache.ChatsChangedEvent event) {
         //Отобразить измененные чаты
+        adapter.swap(event.chats);
+
     };
 
 }
@@ -86,6 +94,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     MainActivity activity;
     Context context;
+    public final List<TdApi.Chat> mChats = new ArrayList<>();
 
     public Adapter (MainActivity activity) {
         this.activity = activity;
@@ -105,10 +114,18 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final Adapter.ViewHolder holder, final int position) {
         context = this.context;
-        holder.name.setText("number +" + PhoneInputFragment.CountryCode + " " + PhoneInputFragment.PhoneNumber);
+
+        TdApi.Chat chat = mChats.get(position);
 
 
+    }
 
+    public void swap(List<TdApi.Chat> chats) {
+        if (chats != null) {
+            mChats.clear();
+            mChats.addAll(chats);
+            notifyDataSetChanged();
+        }
     }
 
 
