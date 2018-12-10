@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:textSize="18dp"
-        android:textColor="#333"/>
+        android:textColor="@color/TextNormal"/>
 
     <TextView
         android:id="@+id/CountryCode"

@@ -1,16 +1,23 @@
 package banana.digital.telegramapi.ui.Chats;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.drinkless.td.libcore.telegram.Client;
 import org.drinkless.td.libcore.telegram.TdApi;
@@ -35,36 +42,17 @@ public class ChatsFragment extends Fragment {
     Adapter adapter;
 
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.chats_fragment_layout, container, false);
-        return v;
-    }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View fragmentView = inflater.inflate(R.layout.chats_fragment_layout, container, false);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         adapter = new Adapter((MainActivity) getActivity());
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        //подписываемся на изменения чатов
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //отписываемся на изменения чатов
-        EventBus.getDefault().unregister(this);
+        return fragmentView;
     }
 
     @Override
@@ -73,12 +61,22 @@ public class ChatsFragment extends Fragment {
         TelegramManager.getInstance().getChats();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(ChatCache.ChatsChangedEvent event) {
-        //Отобразить измененные чаты
-        adapter.swap(event.chats);
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
 
-    };
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChatsChangeEvent(ChatCache.ChatsChangedEvent event) {
+        adapter.notifyDataSetChanged();
+    }
 
 }
 
@@ -93,47 +91,42 @@ public class ChatsFragment extends Fragment {
 class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     MainActivity activity;
-    Context context;
-    public final List<TdApi.Chat> mChats = new ArrayList<>();
+    RecyclerView recyclerView;
 
-    public Adapter (MainActivity activity) {
-        this.activity = activity;
+    public Adapter(MainActivity mainActivity) {
+        this.activity = mainActivity;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        LayoutInflater layoutInflater = LayoutInflater.from(activity);
+        View view = layoutInflater.inflate(R.layout.chats_recycler_view_row, viewGroup, false);
+        ViewHolder chatsHolder = new ViewHolder(view);
+        return chatsHolder;
     }
 
     @Override
-    public Adapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.chats_recycler_view_row, parent, false );
-        Adapter.ViewHolder vh = new Adapter.ViewHolder(v);
-        return vh;
+    public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
+        TdApi.Chat chat = ChatCache.getInstance().mChats.get(i);
+
+        TdApi.Message lastMessage = chat.lastMessage;
+        String title = chat.title;
+
+
+
+        holder.name.setText(title);
+        holder.lastMessage.setText(String.valueOf(lastMessage));
 
     }
-
-
-
-    @Override
-    public void onBindViewHolder(final Adapter.ViewHolder holder, final int position) {
-        context = this.context;
-
-        TdApi.Chat chat = mChats.get(position);
-
-
-    }
-
-    public void swap(List<TdApi.Chat> chats) {
-        if (chats != null) {
-            mChats.clear();
-            mChats.addAll(chats);
-            notifyDataSetChanged();
-        }
-    }
-
 
     @Override
     public int getItemCount() {
-        return 5;
-
+        return ChatCache.getInstance().mChats.size();
     }
+
+
+
 
 
 
@@ -142,6 +135,8 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         View v;
         Context context;
         TextView name;
+        TextView lastMessage;
+        ImageView photo;
 
 
         public ViewHolder(View v) {
@@ -149,6 +144,8 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             this.context = context;
             this.v = v;
             name = v.findViewById(R.id.Name);
+            lastMessage = v.findViewById(R.id.LastMessage);
+            photo = v.findViewById(R.id.photo);
 
         }
     }

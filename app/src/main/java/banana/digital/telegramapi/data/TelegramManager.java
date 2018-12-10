@@ -28,6 +28,7 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     public void initialize(Context context) {
         mClient = Client.create(this,this,this);
         mContext = context;
+        ChatCache.getInstance().initialize();
     }
 
 
@@ -114,10 +115,8 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
         mClient.send(new TdApi.CheckAuthenticationCode(code, null, null), this);
     }
 
-
     public void getChats() {
         mClient.send(new TdApi.GetChats(Long.MAX_VALUE, 0, 42), this);
-
     }
 
 

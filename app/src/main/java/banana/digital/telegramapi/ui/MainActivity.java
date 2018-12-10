@@ -20,11 +20,7 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TelegramManager.getInstance().initialize(this);
-/*
-       if(savedInstanceState == null) {
-           showFragment(new PhoneInputFragment());
-        }
-        */
+
 
 
     }
