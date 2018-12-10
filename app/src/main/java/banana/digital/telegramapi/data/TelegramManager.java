@@ -2,6 +2,7 @@ package banana.digital.telegramapi.data;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -120,6 +121,13 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     }
 
 
+    public void downloadFile(int fileId, @IntRange(from = 1, to = 32) int priority) {
+        mClient.send(new TdApi.DownloadFile(fileId, priority), this);
+    }
+
+    public void requestMessages(long chatId, long fromMessageId) {
+        //mClient.send(new TdApi.);
+    }
 }
 
 

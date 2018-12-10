@@ -8,7 +8,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatCache implements ResultHandler{
+public class ChatCache implements ResultHandler {
 
     private static ChatCache sInstance;
 
@@ -26,14 +26,42 @@ public class ChatCache implements ResultHandler{
     }
 
 
+    public void emitChatsChangedEvent() {
+        EventBus.getDefault().post(new ChatsChangedEvent(mChats));
+    }
+
+
     @Override
     public void onResult(TdApi.Object object) {
-        if (object.getConstructor() == TdApi.UpdateNewChat.CONSTRUCTOR) {
-            mChats.add(((TdApi.UpdateNewChat) object).chat);
+        switch (object.getConstructor()) {
+            case TdApi.UpdateNewChat.CONSTRUCTOR:
+                mChats.add(((TdApi.UpdateNewChat) object).chat);
+                emitChatsChangedEvent();
+                break;
 
-            EventBus.getDefault().post(new ChatsChangedEvent(mChats));
+
+            case TdApi.UpdateChatLastMessage.CONSTRUCTOR:
+                for (TdApi.Chat chat : mChats) {
+                    if (chat.id == ((TdApi.UpdateChatLastMessage) object).chatId) {
+                        chat.lastMessage = ((TdApi.UpdateChatLastMessage) object).lastMessage;
+                        emitChatsChangedEvent();
+                    }
+                }
+                break;
+            case TdApi.UpdateFile.CONSTRUCTOR:
+                for (TdApi.Chat chat : mChats) {
+                    if (chat.photo.small.id == ((TdApi.UpdateFile) object).file.id) {
+                        chat.photo.small = ((TdApi.UpdateFile) object).file;
+                        emitChatsChangedEvent();
+                    }
+                }
+
+
         }
+
+
     }
+
 
     public static class ChatsChangedEvent {
         private final List<TdApi.Chat> chats;

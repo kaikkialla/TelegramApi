@@ -3,6 +3,7 @@ package banana.digital.telegramapi.ui.Chats;
 import android.content.Context;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -93,6 +95,9 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     MainActivity activity;
     RecyclerView recyclerView;
 
+    String lastMessage;
+    String title;
+
     public Adapter(MainActivity mainActivity) {
         this.activity = mainActivity;
     }
@@ -107,12 +112,26 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
-        TdApi.Chat chat = ChatCache.getInstance().mChats.get(i);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int pos) {
+        TdApi.Chat chat = ChatCache.getInstance().mChats.get(pos);
 
-        TdApi.Message lastMessage = chat.lastMessage;
-        String title = chat.title;
+        if(pos == ChatCache.getInstance().mChats.size() - 1 ) {
+            holder.separator.setVisibility(View.GONE);
+        }
 
+        if(chat.lastMessage != null) {
+            if (chat.lastMessage.content.getConstructor() == TdApi.MessageText.CONSTRUCTOR) {
+                lastMessage = ((TdApi.MessageText) chat.lastMessage.content).text.text;
+            }
+        }
+
+
+        title = chat.title;
+        if(chat.photo != null) {
+            if(chat.photo.small.local.isDownloadingCompleted) {
+                Glide.with(activity).load(chat.photo.small.local.path).into(holder.photo);
+            } else TelegramManager.getInstance().downloadFile(chat.photo.small.id, 13);
+        }
 
 
         holder.name.setText(title);
@@ -120,11 +139,20 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     }
 
+
+
+
     @Override
     public int getItemCount() {
         return ChatCache.getInstance().mChats.size();
     }
 
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
+        title = null;
+        lastMessage = null;
+    }
 
 
 
@@ -137,6 +165,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         TextView name;
         TextView lastMessage;
         ImageView photo;
+        ImageView separator;
 
 
         public ViewHolder(View v) {
@@ -146,6 +175,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             name = v.findViewById(R.id.Name);
             lastMessage = v.findViewById(R.id.LastMessage);
             photo = v.findViewById(R.id.photo);
+            separator = v.findViewById(R.id.bottom_item_separator);
 
         }
     }
