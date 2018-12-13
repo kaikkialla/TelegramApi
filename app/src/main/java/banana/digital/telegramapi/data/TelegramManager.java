@@ -126,7 +126,7 @@ public class TelegramManager implements Client.ExceptionHandler, Client.ResultHa
     }
 
     public void requestMessages(long chatId, long fromMessageId) {
-        //mClient.send(new TdApi.);
+        mClient.send(new TdApi.GetChatHistory(chatId, fromMessageId, 0, 42, false),this);
     }
 }
 

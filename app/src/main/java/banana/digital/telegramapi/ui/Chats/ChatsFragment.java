@@ -1,27 +1,23 @@
 package banana.digital.telegramapi.ui.Chats;
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.annotation.IntRange;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
-import org.drinkless.td.libcore.telegram.Client;
 import org.drinkless.td.libcore.telegram.TdApi;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,8 +29,8 @@ import java.util.List;
 import banana.digital.telegramapi.R;
 import banana.digital.telegramapi.data.ChatCache;
 import banana.digital.telegramapi.data.TelegramManager;
+import banana.digital.telegramapi.ui.ChatFragment.ChatFragment;
 import banana.digital.telegramapi.ui.MainActivity;
-import banana.digital.telegramapi.ui.PhoneInput.PhoneInputFragment;
 
 
 public class ChatsFragment extends Fragment {
@@ -58,6 +54,29 @@ public class ChatsFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                TelegramManager.getInstance().getChats();
+                adapter.notifyDataSetChanged();
+
+                Handler mHandler = new Handler();//In UI Thread
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         TelegramManager.getInstance().getChats();
@@ -77,7 +96,7 @@ public class ChatsFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChatsChangeEvent(ChatCache.ChatsChangedEvent event) {
-        adapter.notifyDataSetChanged();
+        adapter.swap(event.getChats());
     }
 
 }
@@ -94,7 +113,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     MainActivity activity;
     RecyclerView recyclerView;
-
+    private final List<TdApi.Chat> mChats = new ArrayList<>();
     String lastMessage;
     String title;
 
@@ -106,14 +125,22 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
-        View view = layoutInflater.inflate(R.layout.chats_recycler_view_row, viewGroup, false);
+        View view = layoutInflater.inflate(R.layout.chat_item, viewGroup, false);
         ViewHolder chatsHolder = new ViewHolder(view);
         return chatsHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int pos) {
-        TdApi.Chat chat = ChatCache.getInstance().mChats.get(pos);
+        final TdApi.Chat chat = mChats.get(pos);
+
+        holder.v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final ChatFragment fragment = ChatFragment.newInstance(chat.id);
+                activity.showFragment(fragment);
+            }
+        });
 
         if(pos == ChatCache.getInstance().mChats.size() - 1 ) {
             holder.separator.setVisibility(View.GONE);
@@ -139,12 +166,17 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     }
 
+    void swap(@NonNull List<TdApi.Chat> chats) {
+        mChats.clear();
+        mChats.addAll(chats);
+        notifyDataSetChanged();
+    }
 
 
 
     @Override
     public int getItemCount() {
-        return ChatCache.getInstance().mChats.size();
+        return mChats.size();
     }
 
     @Override

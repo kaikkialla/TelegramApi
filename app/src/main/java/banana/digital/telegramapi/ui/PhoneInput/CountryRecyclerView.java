@@ -43,12 +43,15 @@ public class CountryRecyclerView extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.layout, new PhoneInputFragment()).commit();
+                getActivity().getSupportFragmentManager().popBackStack();
+                //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.layout, new PhoneInputFragment()).commit();
             }
         });
     }
 
 }
+
+
 
 
 class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -65,7 +68,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.country_recycler_view_row, parent, false );
+        View v = inflater.inflate(R.layout.country_item, parent, false );
         ViewHolder vh = new ViewHolder(v);
         return vh;
 

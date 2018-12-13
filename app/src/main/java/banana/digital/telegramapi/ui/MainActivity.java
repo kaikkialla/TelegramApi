@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
 
 
     public void showFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.layout, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.layout, fragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -67,5 +67,6 @@ public class MainActivity extends AppCompatActivity implements Client.ResultHand
         }
 
     }
+
 
 }
