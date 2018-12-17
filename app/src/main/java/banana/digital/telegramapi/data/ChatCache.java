@@ -1,12 +1,16 @@
 package banana.digital.telegramapi.data;
 
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import org.drinkless.td.libcore.telegram.Client.ResultHandler;
 import org.drinkless.td.libcore.telegram.TdApi;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +20,7 @@ public class ChatCache implements ResultHandler {
     private static ChatCache sInstance;
 
     public final List<TdApi.Chat> mChats = new ArrayList<TdApi.Chat>();
-
-    public final Map<Long, List<TdApi.Message>> mMessages = new HashMap<>();
+    public final Map<Long, Map<Long, TdApi.Message>> mMessages = new HashMap<>();
 
 
     public static ChatCache getInstance() {
@@ -37,8 +40,8 @@ public class ChatCache implements ResultHandler {
     }
 
 
-    public void emitMessagesChangedEvent(long chatId) {
-        EventBus.getDefault().post(new MessagesChangedEvent(chatId,  mMessages.get(chatId)));
+    public void emitMessagesChangedEvent(long chatId, List<TdApi.Message> messages) {
+        EventBus.getDefault().post(new MessagesChangedEvent(chatId,  messages));
     }
 
     @Override
@@ -74,15 +77,38 @@ public class ChatCache implements ResultHandler {
                 final TdApi.Message[] newMessages = ((TdApi.Messages) object).messages;
                 if(newMessages.length > 0) {//Если список новых сообщений не пустой
                     final  long chatId = newMessages[0].chatId;//То для всех новых сообщений будет один chatId
-                    List<TdApi.Message> oldMessages = mMessages.get(chatId);
+                    Map<Long, TdApi.Message> oldMessages = mMessages.get(chatId);
                     if(oldMessages == null) {
-                        oldMessages = new ArrayList<>();
+                        oldMessages = new HashMap<>();
                         mMessages.put(chatId, oldMessages);
                     }
-                    Collections.addAll(oldMessages, newMessages);
-                    emitMessagesChangedEvent(chatId);
+                    for(TdApi.Message newMessage : newMessages) {
+                        oldMessages.put(newMessage.id, newMessage);
+                    }
+                    //Collections.addAll(oldMessages, newMessages);
+
+
+                    final List<TdApi.Message> resultMessages = new ArrayList<>();
+                    for(TdApi.Message message : oldMessages.values()) {
+                        resultMessages.add(message);
+                    }
+
+
+                    Collections.sort(resultMessages, new Comparator<TdApi.Message>() {
+                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                        @Override
+                        public int compare(TdApi.Message m1, TdApi.Message m2) {
+
+                            return Long.compare(m2.id, m1.id);
+                        }
+                    });
+
+                    emitMessagesChangedEvent(chatId, resultMessages);
                 }
 
+
+                break;
+            case TdApi.UpdateNewMessage.CONSTRUCTOR:
                 break;
 
 

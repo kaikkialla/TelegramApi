@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,7 +58,8 @@ public class ChatFragment extends Fragment {
         adapter = new Adapter((MainActivity) getActivity(), chatId);
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        LinearLayoutManager reversedLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true);
+        recyclerView.setLayoutManager(reversedLayoutManager);
 
         return v;
     }
@@ -125,7 +127,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         final TdApi.Message message = mMessages.get(pos);
 
 
-        if(message == null) {
+        if (message == null) {
             long fromMessageId = mMessages.get(mMessages.size() - 2).id;
             TelegramManager.getInstance().requestMessages(chatId, fromMessageId);
         } else {
@@ -185,20 +187,25 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
 
 
+class ViewHolder extends RecyclerView.ViewHolder {
+    View v;
+    Context context;
+    TextView message;
+    TextView date;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        View v;
-        Context context;
-        TextView message;
-        TextView date;
+    public ViewHolder(View v) {
+        super(v);
+        this.context = context;
+        this.v = v;
+        message = v.findViewById(R.id.message);
+        date = v.findViewById(R.id.date);
 
-        public ViewHolder(View v) {
-            super(v);
-            this.context = context;
-            this.v = v;
-            message = v.findViewById(R.id.message);
-            date = v.findViewById(R.id.date);
-
-        }
     }
+    public <T>  T randomOfTwo(T o1, T o2) {
+        if(Math.random() > .5) {
+            return o1;
+        } else return o2;}
 }
+
+}
+
